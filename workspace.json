@@ -110,6 +110,57 @@
           }
         }
       }
+    },
+    "form": {
+      "root": "libs/form",
+      "sourceRoot": "libs/form/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "tsConfig": [
+              "libs/form/tsconfig.lib.json",
+              "libs/form/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/form/**/*"]
+          }
+        },
+        "build": {
+          "builder": "@nrwl/web:package",
+          "options": {
+            "outputPath": "dist/libs/form",
+            "tsConfig": "libs/form/tsconfig.lib.json",
+            "project": "libs/form/package.json",
+            "entryFile": "libs/form/src/index.ts",
+            "external": [
+              "react",
+              "react-dom",
+              "@emotion/styled",
+              "@emotion/core"
+            ],
+            "babelConfig": "@nrwl/react/plugins/bundle-babel",
+            "rollupConfig": "@nrwl/react/plugins/bundle-rollup",
+            "assets": [
+              {
+                "glob": "README.md",
+                "input": ".",
+                "output": "."
+              }
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/form/jest.config.js",
+            "tsConfig": "libs/form/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {

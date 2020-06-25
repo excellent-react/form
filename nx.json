@@ -25,6 +25,9 @@
     "form-documentation-e2e": {
       "tags": [],
       "implicitDependencies": ["form-documentation"]
+    },
+    "form": {
+      "tags": []
     }
   }
 }
