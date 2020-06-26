@@ -12,7 +12,7 @@ export const App = () => {
   const { formEventHandler, submitHandler, fieldHandler, formData } = useForm();
   console.log(formData);
   return (
-    <form onSubmit={submitHandler(console.log)} onBlur={formEventHandler} >
+    <form onSubmit={submitHandler(console.log)} onChange={formEventHandler}>
         <input type="text" aria-label="a-input" onBlur={fieldHandler("a-input")} />
         <input type="datetime-local" id="birthday" name="birthday" />
         <input type="number" name="number" />
