@@ -1,9 +1,5 @@
 import React from 'react';
-import { useForm } from './hooks/useForm';
-
-export type FormInputDataType = string | number | boolean | File | FormInputDataType[];
-export type FormData<K extends string> = Record<K, FormInputDataType>;
-
+import { useForm, FormData } from './hooks/useForm';
 
 export interface FormProps<F extends FormData<string>> extends Omit<HTMLFormElement, 'onSubmit' | 'onChange'> {
   onSubmit?: (data: F) => void;
