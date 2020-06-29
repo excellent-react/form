@@ -11,6 +11,8 @@ const options = [
   { value: 'vanilla', label: 'Vanilla' }
 ]
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
   describe.each([
     ['input'],
     ['change']
@@ -22,8 +24,7 @@ const options = [
     });
 
     const Form = () => {
-      const { formRef, customFieldHandler, formValues } = useForm({ onSubmit: onSubmitMocked });
-      console.log(formValues);
+      const { formRef, customFieldHandler } = useForm({ onSubmit: onSubmitMocked });
       return (
         <form ref={formRef} >
           <input name="a-input" type="text" aria-label="a-input" />
@@ -35,7 +36,10 @@ const options = [
       );
     }
 
-    const submitBtn = (form: RenderResult) => form.getByLabelText('submit');
+    const submit = async (form: RenderResult) =>  {
+      await sleep(100);
+      userEvent.click(form.getByLabelText('submit'));
+    }
     
     it('should return changed text input values', async () => {
       const form = render(<Form />);
@@ -43,8 +47,7 @@ const options = [
       const inputText = "a input text";
   
       await userEvent.type(input, inputText);
-      userEvent.click(submitBtn(form));
-      
+      await submit(form);
       expect(onSubmitMocked).toBeCalledWith({ 'a-input': inputText });
     });
 
@@ -53,8 +56,7 @@ const options = [
       const checkbox = form.getByLabelText('a-checkbox');
   
       userEvent.click(checkbox);
-      userEvent.click(submitBtn(form));
-      
+      await submit(form);
       expect(onSubmitMocked).toBeCalledWith({ 'a-checkbox': true });
     });
 
@@ -63,8 +65,7 @@ const options = [
       const select = form.getByLabelText('Food');
       
       selectEvent.select(select, "Strawberry");
-      userEvent.click(submitBtn(form));
-
+      await submit(form);
       expect(onSubmitMocked).toBeCalledWith({ 'food': 'strawberryValue' });
     });
   });
