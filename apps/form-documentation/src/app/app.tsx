@@ -10,20 +10,22 @@ const options = [
 ]
 
 export const App = () => {
-  const { formRef, updateInput, formData, errors } = useForm({
-    mode: 'input',
+  const { formRef, formValues, updateFieldValue, customFieldHandler, errors } = useForm({
+    // watchValuesOn: 'change',
     multipleValueInputs: ['sel2'],
     onSubmit: console.log,
     validation: object({
       'a-input': string().min(10, 'Input must be at least 10').required(),
-      'sel': string().required()
-    })
+      'sel': string().required(),
+      'sel3': string().min(10).required(),
+    }),
   });
 
-  console.log(formData, errors);
+  // console.log(getValues());
+  console.log(formValues, errors);
 
   return (
-    <form ref={formRef} name="formX">
+    <form ref={formRef}>
       <input type="datetime-local" id="birthday" name="birthday" />
       <input type="number" name="number" />
       <input type="week" name="week" />
@@ -68,8 +70,9 @@ export const App = () => {
         </textarea>
       <input type="range" id="volume" name="volume"
         min="0" max="11"></input>
-      <Select options={options} isClearable name="sel" onChange={updateInput} />
-      <Select options={options} isClearable name="sel2" onChange={updateInput} isMulti />
+      <Select options={options} isClearable name="sel" />
+      <Select options={options} isClearable name="sel2" onChange={updateFieldValue} isMulti />
+      <Select options={options} isClearable onChange={customFieldHandler('sel3', e => e && e['value'])}/>
       <button type="submit" aria-label="submit">submit</button>
     </form>
   );

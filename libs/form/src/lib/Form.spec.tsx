@@ -22,13 +22,14 @@ const options = [
     });
 
     const Form = () => {
-      const { formRef, fieldHandler } = useForm({ mode, onSubmit: onSubmitMocked });
+      const { formRef, customFieldHandler, formValues } = useForm({ onSubmit: onSubmitMocked });
+      console.log(formValues);
       return (
         <form ref={formRef} >
           <input name="a-input" type="text" aria-label="a-input" />
           <input name="a-checkbox" type="checkbox" aria-label="a-checkbox" />
           <label htmlFor="food">Food</label>
-          <Select options={options} name="food" inputId="food" onChange={fieldHandler('food', op => op && op['value'])} />
+          <Select options={options} inputId="food" onChange={customFieldHandler('food', e => e && e['value'])} />
           <button type="submit" aria-label="submit">submit</button>
         </form>
       );
@@ -63,7 +64,7 @@ const options = [
       
       selectEvent.select(select, "Strawberry");
       userEvent.click(submitBtn(form));
-      
-      expect(onSubmitMocked).toBeCalledWith({ 'a-checkbox': true });
+
+      expect(onSubmitMocked).toBeCalledWith({ 'food': 'strawberryValue' });
     });
   });
