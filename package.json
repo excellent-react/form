@@ -32,7 +32,8 @@
     "document-register-element": "1.13.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-select": "^3.1.0"
+    "react-select": "^3.1.0",
+    "yup": "^0.29.1"
   },
   "devDependencies": {
     "@babel/core": "7.9.6",
@@ -54,6 +55,7 @@
     "@types/react": "16.9.35",
     "@types/react-dom": "16.9.8",
     "@types/react-select": "^3.0.13",
+    "@types/yup": "^0.29.3",
     "@typescript-eslint/eslint-plugin": "2.19.2",
     "@typescript-eslint/parser": "2.19.2",
     "babel-jest": "25.1.0",
@@ -68,6 +70,7 @@
     "eslint-plugin-react-hooks": "4.0.2",
     "jest": "25.2.3",
     "prettier": "2.0.4",
+    "react-select-event": "^4.1.4",
     "ts-jest": "25.2.1",
     "ts-node": "~7.0.0",
     "tslint": "~6.0.0",

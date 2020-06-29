@@ -1,68 +1,102 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { ObjectSchema, ValidationError } from 'yup';
 
-export type InputValueType = string | number | boolean | null | undefined | Date | File | InputValueType[];
-export type FormData<K extends string> = Record<K, InputValueType>;
+export type InputValueType = FormDataEntryValue | FormDataEntryValue[];
+export type FormDataRecord<K extends string | number | symbol> = Record<K, InputValueType>;
 export type ElementEvent<E extends HTMLElement> = React.ChangeEvent<E> | React.FocusEvent<E>
 export type EventTarget = { target: HTMLInputElement | HTMLFormElement };
+export type Errors<K extends string | number | symbol> = Partial<Record<K, string>> | undefined;
+export type ValueTransform<K extends string | number | symbol> = Partial<Record<K, 'number' | 'boolean' | 'date'>> | undefined;
 
-export type FormSubmitHandler<F extends FormData<string>> = (formData: F) => void | Promise<FormSubmitHandler<F>>
+export type FormSubmitHandler<F extends FormDataRecord<string>> = (formData: F) => void | Promise<FormSubmitHandler<F>>
 
 const getInputEventValue = (e: ElementEvent<HTMLInputElement>) => e.target.value;
-const getInputValue = (input: HTMLFormElement | HTMLInputElement) => {
-  const inputKey = input?.name || input?.id;
-  if (inputKey) {
-    let inputValue: InputValueType;
 
-    // Native Multi-Select
-    if (input.tagName === 'SELECT' && input.multiple) {
-      const options = [];
-      input.querySelectorAll('option:checked').forEach((o: HTMLOptionElement) => {
-        options.push(o.value);
-      });
-      inputValue = options;
-
-    // Native Multi-Check
-    } else if (input.type === 'checkbox' && document.querySelectorAll(`[name="${input.name}"]`).length > 1) {
-      const options = [];
-      document.querySelectorAll(`[name="${input.name}"]:checked`).forEach((o: HTMLInputElement) => {
-        options.push(o.value);
-      });
-      inputValue = options;
-
+const formToFormDataRecord = <F extends FormDataRecord<string>>(formElement: HTMLFormElement, multipleValueInputs: (keyof F)[]): F => {
+  const formData = new FormData(formElement);
+  let formDataRecord: F;
+  formData.forEach((value, key: keyof F) => {
+    const inputAsCheckbox = formElement.querySelectorAll(`input[name="${key}"]:checked`);
+    if (inputAsCheckbox.length === 1 && inputAsCheckbox.item(0)) {
+      formDataRecord = { 
+        ...formDataRecord,
+        [key]: (inputAsCheckbox.item(0) as HTMLInputElement).checked
+      };
     } else {
-
-      // Value Transformer
-      inputValue = {
-        "file": input.files ? input.multiple ? input.files : input.files[0] : null,
-        "checkbox": input?.checked,
-        "date": input?.valueAsDate,
-        "datetime-local": input?.valueAsDate,
-        "number": input?.valueAsNumber,
-        "range": input?.valueAsNumber,
-      }[input.type] || input.value;
+      formDataRecord = { 
+        ...formDataRecord, 
+        [key]: 
+          multipleValueInputs.includes(key) ? 
+            formData.getAll(key as string).filter(v => v) : 
+            value || undefined
+        };
     }
-    return { [inputKey]: inputValue };
-  }
-  return undefined;
+  });
+  return formDataRecord;
 }
 
-export const useForm = <F extends FormData<string>>() => {
-  const [formData, setFormData] = useState({} as F);
+export type UseFormOptions<F extends FormDataRecord<string>> = undefined | {
+  mode?: 'input' | 'change';
+  multipleValueInputs?: (keyof F)[];
+  validation?: ObjectSchema<F>;
+  onSubmit?: FormSubmitHandler<F>;
+  valuesTransform?: ValueTransform<keyof F>
+  useDefaultSubmit?: boolean;
+};
 
-  const formEventHandler = useCallback((e: ElementEvent<HTMLFormElement>) => {
-    const inputElement = e.target as HTMLFormElement | HTMLInputElement;
-    const inputValue = getInputValue(inputElement);
-    if (inputValue) {
-      setFormData(currentFormData => ({ ...currentFormData, ...inputValue }));
-    }
-  }, [setFormData]);
+export const useForm = <F extends FormDataRecord<string>>(userOption?: UseFormOptions<F>) => {
+  const eventType = userOption?.mode || 'change';
+  const onSubmit = userOption?.onSubmit;
+  const useDefaultSubmit = userOption?.useDefaultSubmit;
+  const multipleValueInputs = userOption?.multipleValueInputs || [];
 
-  const submitHandler = useCallback((onSubmit: FormSubmitHandler<F>) => (e: ElementEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
+  const [formData, setFormData] = useState<F>();
+  const [eventAssigned, setEventAssigned] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement | undefined>();
+
+  const errors: Errors<keyof F> = useMemo(() => {
+    let errors: Errors<keyof F> = undefined;
+    if (userOption && userOption.validation) {
+      try {
+        userOption.validation.validateSync(formData, { abortEarly: false });
+      } catch (error) {
+        (error as ValidationError).inner.forEach(e => {
+          errors = { ...errors, [e.path]: e.message }
+        })
+      }
     }
-  }, [formData]);
+    return errors;
+  }, [formData, userOption]);
+
+  const updateInput = useCallback(() => { setTimeout(() => formRef.current && formRef.current.dispatchEvent(new Event(eventType)), 1) }, [eventType, formRef]);
+  const submitHandler = useCallback((e: Event) => {
+    if (errors === undefined) {
+      if (onSubmit) {
+        onSubmit(formData);
+      }
+      if (!useDefaultSubmit) {
+        e.preventDefault();
+      }
+    } else {
+      e.preventDefault();
+    }
+  }, [formData, onSubmit, errors, useDefaultSubmit]);
+
+  useEffect(() => {
+    if (formRef.current && !eventAssigned) {
+      setEventAssigned(true);
+      setFormData(formToFormDataRecord(formRef.current as HTMLFormElement, multipleValueInputs));
+      formRef.current.addEventListener(eventType, (e) => {
+        setFormData(formToFormDataRecord(e.currentTarget as HTMLFormElement, multipleValueInputs));
+      });
+    }
+  }, [eventType, multipleValueInputs, eventAssigned]);
+
+  useEffect(() => {
+    if (formRef.current && onSubmit) {
+      formRef.current.onsubmit = submitHandler
+    }
+  }, [formData, onSubmit, submitHandler]);
 
   const fieldHandler = useCallback(<K extends keyof F, E, EF extends (e: E) => F[K] | undefined>(inputKey: K, eventValueCook?: EF) => (event: EF extends undefined ? ElementEvent<HTMLInputElement> : E) => {
     const inputValue = eventValueCook ? eventValueCook(event) : getInputEventValue(event as ElementEvent<HTMLInputElement>)
@@ -72,7 +106,8 @@ export const useForm = <F extends FormData<string>>() => {
   return {
     fieldHandler,
     formData,
-    formEventHandler,
-    submitHandler
+    formRef,
+    updateInput,
+    errors
   }
 }
