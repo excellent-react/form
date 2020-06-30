@@ -1,28 +1,11 @@
 import React from 'react';
 import { useForm } from '@excellent-react/form';
-import Select from 'react-select';
-import { object, string } from 'yup';
 
-const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' }
-]
 
 export const App = () => {
-  const { formRef, formValues, updateFieldValue, customFieldHandler, errors } = useForm({
-    // watchValuesOn: 'change',
-    multipleValueInputs: ['sel2'],
+  const { formRef } = useForm({
     onSubmit: console.log,
-    validation: object({
-      'a-input': string().min(10, 'Input must be at least 10').required(),
-      'sel': string().required(),
-      'sel3': string().min(10).required(),
-    }),
   });
-
-  // console.log(getValues());
-  console.log(formValues, errors);
 
   return (
     <form ref={formRef}>
@@ -65,14 +48,9 @@ export const App = () => {
         <option value="fiat">Fiat</option>
         <option value="audi">Audi</option>
       </select>
-      <textarea name="message" rows={10} cols={30}>
-        The cat was playing in the garden.
-        </textarea>
+      <textarea name="message" rows={10} cols={30} defaultValue="The cat was playing in the garden." />
       <input type="range" id="volume" name="volume"
         min="0" max="11"></input>
-      <Select options={options} isClearable name="sel" />
-      <Select options={options} isClearable name="sel2" onChange={updateFieldValue} isMulti />
-      <Select options={options} isClearable onChange={customFieldHandler('sel3', e => e && e['value'])}/>
       <button type="submit" aria-label="submit">submit</button>
     </form>
   );
