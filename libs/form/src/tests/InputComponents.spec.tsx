@@ -1,17 +1,16 @@
 import React from 'react';
 import Select from 'react-select'
-import { render, RenderResult } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import selectEvent from 'react-select-event'
 import { useForm } from '../lib/hooks/useForm';
+import { submit } from './tools';
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberryValue', label: 'Strawberry' },
   { value: 'vanilla', label: 'Vanilla' }
 ]
-
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe("Form input Components values should return onSubmit", () => {
   const onSubmitMocked = jest.fn();
@@ -54,15 +53,6 @@ describe("Form input Components values should return onSubmit", () => {
     );
   }
 
-  const submit = async (form: RenderResult) => {
-    await sleep(100);
-    userEvent.click(form.getByLabelText('submit'));
-  }
-
-  const checkSubmitValues = (values: object) => {
-    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining(values));
-  }
-
   it('text input', async () => {
     const form = render(<Form />);
     const input = form.getByLabelText('a-input');
@@ -70,7 +60,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     await userEvent.type(input, inputText);
     await submit(form);
-    checkSubmitValues({ 'a-input': inputText });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'a-input': inputText }));
   });
 
   it('checkbox boolean', async () => {
@@ -79,7 +69,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     userEvent.click(checkbox);
     await submit(form);
-    checkSubmitValues({ 'a-checkbox': true });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'a-checkbox': true }));
   });
 
   it('radio option', async () => {
@@ -88,7 +78,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     userEvent.click(radioButton);
     await submit(form);
-    checkSubmitValues({ 'drone': 'dewey' });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'drone': 'dewey' }));
   });
 
   it('multiple checked values', async () => {
@@ -101,7 +91,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     await submit(form);
 
-    checkSubmitValues({ 'favorite_pet': ['dogs', 'birds'] });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'favorite_pet': ['dogs', 'birds'] }));
   });
 
   it('hidden input', async () => {
@@ -110,7 +100,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     userEvent.click(checkbox);
     await submit(form);
-    checkSubmitValues({ 'a-hidden-input': 'hidden-value' });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'a-hidden-input': 'hidden-value' }));
   });
 
   it('custom component ', async () => {
@@ -119,7 +109,7 @@ describe("Form input Components values should return onSubmit", () => {
 
     selectEvent.select(select, "Strawberry");
     await submit(form);
-    checkSubmitValues({ 'food': 'strawberryValue' });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'food': 'strawberryValue' }));
   });
 
   it('custom component with native event callback', async () => {
@@ -129,6 +119,6 @@ describe("Form input Components values should return onSubmit", () => {
 
     await userEvent.type(passwordInput, inputText);
     await submit(form);
-    checkSubmitValues({ 'a-password': inputText });
+    expect(onSubmitMocked).toBeCalledWith(expect.objectContaining({ 'a-password': inputText }));
   });
 });
