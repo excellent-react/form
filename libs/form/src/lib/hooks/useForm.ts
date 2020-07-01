@@ -11,7 +11,7 @@ const userDefaultConfig = {
 }
 
 export const useForm = <F extends FormDataRecord<string>>(userConfig?: UseFormOptions<F>) => {
-  const { onSubmit, validation, watchValuesOn, useDefaultSubmit, multipleValueInputs } = useMemo(() => ({ ...userDefaultConfig, ...userConfig, multipleValueInputs: (userConfig.multipleValueInputs || userDefaultConfig.multipleValueInputs).join('') }), [userConfig]);
+  const { onSubmit, validation, watchValuesOn, useDefaultSubmit, multipleValueInputs } = useMemo(() => ({ ...userDefaultConfig, ...userConfig, multipleValueInputs: (userConfig?.multipleValueInputs || userDefaultConfig.multipleValueInputs).join('') }), [userConfig, userConfig?.multipleValueInputs]);
   const currentValidation = useValidation<F>(validation);
   const [eventAssigned, setEventAssigned] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement | undefined>();
@@ -50,12 +50,12 @@ export const useForm = <F extends FormDataRecord<string>>(userConfig?: UseFormOp
     }
   }, [updateValuesAndErrors, onSubmit, useDefaultSubmit]);
 
-  // Default Values and Errors state update
+  // Default Values and Errors state update only on watch mode
   useEffect(() => {
-    if (formRef.current && !formValues) {
+    if (formRef.current && !formValues && watchValuesOn) {
       updateValuesAndErrors();
     }
-  }, [formValues, updateValuesAndErrors]);
+  }, [formValues, updateValuesAndErrors, watchValuesOn]);
 
   // Assign Event to form to watch value changes if configed
   useEffect(() => {
