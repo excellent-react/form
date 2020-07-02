@@ -50,7 +50,6 @@ describe("Form watch mode", () => {
     fireEvent.change(form.getByTestId('a-form'));
 
     // render here +1
-    // TODO: Shouldn't, since values dose not changed
     await submit(form);
     expect(reRender).toBeCalledTimes(4);
   });
@@ -67,7 +66,6 @@ describe("Form watch mode", () => {
     await userEvent.type(input, inputText);
     
     // render here +1
-    // TODO: Shouldn't, since values dose not changed
     await submit(form);
     expect(reRender).toBeCalledTimes(13);
   });

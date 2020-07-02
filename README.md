@@ -1,9 +1,9 @@
-<img src="apps/form-documentation/src/assets/excellent-react.svg" alt="Excellent React" width="400"/>
+<img src="https://raw.githubusercontent.com/excellent-react/form/master/apps/form-documentation/src/assets/excellent-react.svg" alt="Excellent React" width="400"/>
 
 **Excellent Tools for your Excellent React App development.** 
 ______
 
-<img src="apps/form-documentation/src/assets/excellent-react-use-form.svg" alt="Excellent React" max-width="600"/>
+<img src="https://raw.githubusercontent.com/excellent-react/form/master/apps/form-documentation/src/assets/excellent-react-use-form.svg" alt="Excellent React" max-width="600"/>
 
 An Excellent React hook for you React forms.
 

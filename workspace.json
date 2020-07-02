@@ -16,7 +16,6 @@
             "polyfills": "apps/form-documentation/src/polyfills.ts",
             "tsConfig": "apps/form-documentation/tsconfig.app.json",
             "assets": [
-              "apps/form-documentation/src/favicon.ico",
               "apps/form-documentation/src/assets"
             ],
             "styles": [],
