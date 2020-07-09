@@ -1,7 +1,7 @@
 {
   "name": "@excellent-react/form",
   "description": "Excellent hook to React form state and validation.",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "homepage": "https://github.com/excellent-react/form",
   "author": "Deep Panchal (https://github.com/panchaldeep009)",
   "license": "MIT",
