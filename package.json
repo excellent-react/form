@@ -7,7 +7,7 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
-    "cd-form-documentation": "yarn test form-documentation && yarn test form && yarn build form-documentation --prod",
+    "cd-form-documentation": "yarn test form-documentation && yarn test form && yarn build form-documentation --with-deps --prod",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e",
     "affected:apps": "nx affected:apps",

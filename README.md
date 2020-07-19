@@ -5,17 +5,24 @@ ______
 
 <img src="https://raw.githubusercontent.com/excellent-react/form/master/apps/form-documentation/src/assets/excellent-react-use-form.svg" max-width="600"/>
 
-A Dead Simple and Excellent React hook for you React application forms needs.
+A Dead Simple and Excellent React's hook for you React application forms needs.
 
-## What makes this an Excellent react hook.
+[http://form.excellent-react.com](http://form.excellent-react.com)
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/98b875b6-6bff-4d81-a9b7-5923a8025adc/deploy-status)](https://app.netlify.com/sites/form-excellent-react/deploys)
+
+
+# ⚠️ Web application use only
+
+## What makes it an Excellent react hook.
   * [Dead Simple Integration 😎 ](#-dead-simple-integration)
   * [Smaller foot-print 👣 ](#-smaller-footprint)
-  * [Awesome Tools 🛠️ ](#smaller-footprint-)
-     * [Custom Form Field support 🕹](#custom-form-field-support)
+  * [Awesome Tooling 🛠️ ](#-awesome-tooling)
+     * [Custom Form Field support 🕹](#-custom-form-field-support)
      * [Watch form values changes🧐](#-watch-form-values)
      * [Form Validations ✅ ](#-form-validation)
-     * Multi-Select input values handling
-  * Performance 🚀
+     * [Multi-Select input values handling ✌️](#-multi-select-input-values-handling)
+  * [Performance 🚀](#-performance)
 
 # **😎 Dead Simple Integration**
 
@@ -58,13 +65,11 @@ const MyForm = () => {
 }
 ```
 
-**`useForm`** hook returns `formRef` property, which needs to assign to the form component ref props, In order to identify and sync values thier all form fields buy the given **name**. 
-
-To get fields value, **`useForm`** takes config where `onSubmit` takes callback function which have object of values and field name pair in.
+Just by assigning `ref` returning from **`useForm`** hook to the `form` component's ref, it delivers values of all fields identified by the their **name** on submit form, which can be capture by giving callback function to `onSubmit` config.
 
 # **👣 Smaller footprint**
 
-Compare to other popular react form libraries it has Smaller footprint in terms of integration in your JSX code. Also it don't need extra implementation for custom react components that compiles to basic form element.
+Compare to other popular react form libraries it has Smaller footprint in terms of integration in JSX code. In addition, it doesn't required extra implementation for custom react components that compiles to basic form element.
 
 * **Formik**
 
@@ -164,6 +169,7 @@ const MyForm = () => {
 
 * ⭐ **@excellent-rect/form**
 
+*No hookings needed on each form form fields.*
 ```js
 import React from 'react';
 import { useForm } from "@excellent-rect/form";
@@ -203,11 +209,11 @@ const MyForm = () => {
 };
 ```
 
-# **Awesome Tools 🛠️**
+# **🛠️ Awesome Tooling**
 
 ## **🕹Custom Form Field support**
 
-Some react input component dose not translate into valid native html input element, for those kind of components `useForm` hook gives `customFieldHandler` to listen value changes.
+Some react input component dose not compiles into valid native html input element, for those kind of components `useForm` hook gives `customFieldHandler` to listen value changes.
 
 ```jsx
 import React from 'react';
@@ -236,14 +242,14 @@ const MyForm = () => {
 
 ## **🧐 Watch Form Values**
 
-This configuration allows to watch fields value changes. This can configured by defining `watchValuesOn` option in config which returned `formValues` property from hook that can used to get current form values.
+This configuration allows to watch all fields value changes, by defining `watchValuesOn` option in config that returns `formValues` property from hook that can used to get current form values.
 ```js
 const { formValues, formRef } = useForm({
   watchValuesOn: 'change',
   onSubmit: console.log
 })
 ```
-There are two type of watch mode config
+There are two type of watch mode available to config
 ### **`'input'`** 
 This watch mode updates and validates (if defined) `formValues` on press of key stroke on field just like `onChange` event on input, 
 
@@ -308,14 +314,10 @@ const MyForm = () => {
     }))
   });
 
-  useEffect(() => {
-    errorsCatch(errors);
-  }, [errors])
-
   return (
     <form ref={formRef} >
       <input name="a-input" type="text" aria-label="aInput" />
-      <span>{`Error: ${errors.aInput}}`</span>
+      <span>Error: {errors.aInput}</span>
       <button type="submit" aria-label="submit">submit</button>
     </form>
   );
@@ -324,3 +326,67 @@ const MyForm = () => {
 
 Validation allows to not submit invalid input form, In `useForm` validation this every time fields value changes it will check for errors, that is `onSubmit` and on input/change field, if `watchValuesOn` defined. 
 `useForm` gives `errors` object which is record of field name as key and value as error message, and it can be `undefined` if no errors found. 
+
+## **✌ Multi-Select input values handling**
+To capture array of multiple values of input component, `useForm` has configuration to specify array of input that has multiple values.
+
+```jsx
+import React from 'react';
+import { useForm } from '@excellent-react/form';
+
+const MyForm = () => {
+  const { formRef } = useForm({ 
+    onSubmit: console.log,
+    multipleValueInputs: ['favorite_pet']
+  });
+
+  return (
+    <form ref={formRef}>
+      <fieldset>
+        <legend>Favorite Pets</legend>
+        <input type="checkbox" name="favorite_pet" value="dogs" id="dogs" /> <label htmlFor="dogs">Dogs</label>
+        <input type="checkbox" name="favorite_pet" value="cats" id="cats" /> <label htmlFor="cats">Cats</label>
+        <input type="checkbox" name="favorite_pet" value="birds" id="birds" /> <label htmlFor="birds">Birds</label>
+      </fieldset>
+      <button type="submit" aria-label="submit">submit</button>
+    </form>
+  );
+};
+```
+
+It works with other custom react input components.
+
+```jsx
+import React from 'react';
+import { useForm } from '@excellent-react/form';
+import Select from 'react-select';
+
+const options = [
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' }
+]
+
+const MyForm = () => {
+  const { formRef } = useForm({ 
+    onSubmit: console.log,
+    multipleValueInputs: ['favorite_test']
+  });
+
+  return (
+    <form ref={formRef}>
+      <Select
+        options={options}
+        name="favorite_test"
+        isMulti
+      />
+      <button type="submit">submit</button>
+    </form>
+  );
+};
+```
+
+# **🚀 Performance**
+## **🔄 Re-rendering**
+
+ Excellent-React's **`useForm`** has options to not watch values changes of each input field in the form, depending on use or not use of `formValues`, `errors`. Not configuring watch mode *maximize performace of useForm*
