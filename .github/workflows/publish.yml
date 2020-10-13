@@ -25,6 +25,5 @@ jobs:
           git_email: bcomnes@gmail.com
           git_username: ${{ github.actor }}
           newversion: ${{ steps.bump.outputs.version }}
-          push_version_commit: true 
           github_token: ${{ secrets.GITHUB_TOKEN }} 
           npm_token: ${{ secrets.NPM_TOKEN }}
