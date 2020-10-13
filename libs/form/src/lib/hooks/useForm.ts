@@ -6,12 +6,32 @@ import { useValidation } from './useValidation';
 
 
 const getInputEventValue = (e: ElementEvent<HTMLInputElement>) => e.target.value;
-const userDefaultConfig = {
+const defaultOptions = {
   multipleValueInputs: [],
 }
 
-export const useForm = <F extends FormDataRecord<string>>(userConfig?: UseFormOptions<F>) => {
-  const { onSubmit, validation, watchValuesOn, useDefaultSubmit, multipleValueInputs } = useMemo(() => ({ ...userDefaultConfig, ...userConfig, multipleValueInputs: (userConfig?.multipleValueInputs || userDefaultConfig.multipleValueInputs).join('') }), [userConfig, userConfig?.multipleValueInputs]);
+/**
+ * ### Dead simple and excellent react hook for your React forms.
+ * 
+ * ## **➕ Integration**
+ * Below example shows basic use of `useForm`.
+ * ```
+ * const MyForm = () => {
+ *   const { formRef } = useForm({
+ *      onSubmit: (data) => console.log(data),
+ *    });
+ * 
+ *    return (
+ *      <form ref={formRef}>
+ *        <input type="text" name="aInput" />
+ *        <button type="submit">submit</button>
+ *      </form>
+ *    );
+ * };
+ * ```
+ */
+export const useForm = <F extends FormDataRecord<string>>(options?: UseFormOptions<F>) => {
+  const { onSubmit, validation, watchValuesOn, useDefaultSubmit, multipleValueInputs } = useMemo(() => ({ ...defaultOptions, ...options, multipleValueInputs: (options?.multipleValueInputs || defaultOptions.multipleValueInputs).join('') }), [options, options?.multipleValueInputs]);
   const currentValidation = useValidation<F>(validation);
   const [eventAssigned, setEventAssigned] = useState<boolean>(false);
   const formRef = useRef<HTMLFormElement | undefined>();
@@ -83,11 +103,112 @@ export const useForm = <F extends FormDataRecord<string>>(userConfig?: UseFormOp
   }, [setCustomFieldValues, currentValidation]);
 
   return {
+    /**
+     * ## **🕹 Custom form field handler**
+     * 
+     * Some react input components do not compile into valid native html input elements. 
+     * For those kinds of components, `useForm` hook gives `customFieldHandler` to listen to the value changes.
+     * 
+     * # Example
+     * ```jsx
+     * const MyForm = () => {
+     *   const { formRef, customFieldHandler, formValues } = useForm({
+     *     onSubmit: (data) => console.log(data),
+     *   });
+     * 
+     *   return (
+     *     <form ref={formRef}>
+     *       <DatePicker
+     *         selected={formValues.aDate}
+     *         onChange={customFieldHandler('aDate', date => date.toString())}
+     *       />
+     *       <button type="submit">submit</button>
+     *     </form>
+     *   );
+     * };
+     * ```
+     */
     customFieldHandler,
+    /**
+     * This is a collection of form's inputs value.
+     * ```js
+     * {
+     *    aInputName: "aInputValue"
+     * }
+     * ```
+     */
     formValues,
+    /**
+     * This `formRef needs to be hooked on the form tag.
+     * ```jsx
+     * <form ref={formRef}>
+     *   <input type="text" name="aInput" />
+     *   <button type="submit">submit</button>
+     * </form>
+     * ```
+     */
     formRef,
+    /**
+     * ## Update a Field Value
+     * In order to work form values watching, change of any field in form should emit an event on form tag.
+     * Most of all Input components do that but some custom input components that compiles to native input element but don't emit input changes event, where `updateFieldValue` can be use to watch the latest `formValues`.
+     * 
+     * ### Note : 
+     * Custom input component that has `customFieldHandler` hooked, doesn't need to implement anything to update `formValues`. It would be updated always regardless of any watch mode.
+     * 
+     * # Example
+     * ```jsx
+      const options = [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' }
+      ]
+
+      const MyForm = () => {
+        const { formRef, updateFieldValue, formValues } = useForm({
+          watchValuesOn: 'change',
+          onSubmit: console.log,
+        });
+
+        return (
+          <form ref={formRef}>
+            <Select
+              options={options}
+              name="gender"
+              onChange={updateFieldValue}
+            />
+            <button type="submit">submit</button>
+          </form>
+        );
+      };
+      ```
+     */
     updateFieldValue,
+    /**
+     * This is a collection of form's inputs validation error.
+     * ```js
+     * {
+     *    aInputName: "a Input name filed is required"
+     * }
+     * ```
+     */
     errors,
+    /**
+     * This is a function to get collection of value and error of inputs in the form. This can be useful to get latest values and error while under certain watch modes.
+     * ```js
+     * getValuesAndErrors();
+     * ```
+     * returns
+     * ```js
+     * {
+     *   values: {
+     *     aInputName: 'aInputValue'
+     *   },
+     *   errors: {
+     *     aInputName: 'Invalid value'
+     *   }
+     * }
+     * ```
+     */
     getValuesAndErrors: updateValuesAndErrors
   }
 }
