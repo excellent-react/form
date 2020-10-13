@@ -20,7 +20,7 @@ jobs:
       - run: npm i
       - run: npm test
       - name: Version and publush to npm
-      - uses: bcomnes/npm-bump@v1.0.4
+        uses: bcomnes/npm-bump@v1.0.4
         with:
           git_email: bcomnes@gmail.com
           git_username: ${{ github.actor }}
