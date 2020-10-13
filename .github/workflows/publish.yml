@@ -2,6 +2,7 @@ on:
   push:
     branches: 
     - master 
+
 name: Bump version, build and release npm package
 jobs:
   build-npm:
@@ -11,11 +12,19 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - id: bump
+        name: Bump product version
         uses: rymndhng/release-on-push-action@master
         with:
           bump_version_scheme: minor # gets overriden by PR label
       - uses: actions/checkout@v1
       - run: npm i
       - run: npm test
-      - run: npm version ${{ steps.bump.outputs.version }}
-      - run: npm publish
+      - name: Version and publush to npm
+      - uses: bcomnes/npm-bump@v1.0.4
+        with:
+          git_email: bcomnes@gmail.com
+          git_username: ${{ github.actor }}
+          newversion: ${{ steps.bump.outputs.version }}
+          push_version_commit: true 
+          github_token: ${{ secrets.GITHUB_TOKEN }} 
+          npm_token: ${{ secrets.NPM_TOKEN }}
