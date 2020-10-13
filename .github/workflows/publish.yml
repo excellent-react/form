@@ -11,19 +11,12 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - id: bump
-        name: Bump product version
-        uses: rymndhng/release-on-push-action@master
-        with:
-          bump_version_scheme: minor # gets overriden by PR label
       - uses: actions/checkout@v1
+      - name: Automated Github Action Version Bump
+        uses: rimonhanna/gh-action-bump-version@master
       - run: npm i
       - run: npm test
-      - name: Version and publush to npm
-        uses: bcomnes/npm-bump@v1.0.4
+      - name: Publish to npm
+        uses: JS-DevTools/npm-publish@v1
         with:
-          git_email: bcomnes@gmail.com
-          git_username: ${{ github.actor }}
-          newversion: ${{ steps.bump.outputs.version }}
-          github_token: ${{ secrets.GITHUB_TOKEN }} 
-          npm_token: ${{ secrets.NPM_TOKEN }}
+          token: ${{ secrets.NPM_TOKEN }}
