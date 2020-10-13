@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Markdown from 'markdown-to-jsx';
-import { Flex, Spinner } from '@chakra-ui/core';
+import { Box, Flex, Spinner } from '@chakra-ui/core';
 
 const fetchDocumentationMarkdown = () => new Promise<string>((resolver, reject) => {
   fetch('https://raw.githubusercontent.com/panchaldeep009/form/master/README.md')
@@ -39,11 +39,13 @@ const FormDocumentation: React.FC = () => {
     </Flex>
 
   ) : (
-      <Markdown
-        children={markdownData}
-        options={{
-          disableParsingRawHTML: true
-        }} />
+      <Box margin="auto" width={['100%', '80%', '60%', '50%']}>
+        <Markdown
+          children={markdownData}
+          options={{
+            disableParsingRawHTML: true
+          }} />
+      </Box>
     );
 }
 
