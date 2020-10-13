@@ -28,9 +28,11 @@
   },
   "private": true,
   "dependencies": {
-    "@emotion/core": "10.0.27",
-    "@emotion/styled": "10.0.27",
+    "@chakra-ui/core": "^0.8.0",
+    "@emotion/core": "^10.0.35",
+    "@emotion/styled": "^10.0.27",
     "document-register-element": "1.13.1",
+    "emotion-theming": "^10.0.27",
     "lodash": "^4.17.15",
     "markdown-to-jsx": "^7.0.1",
     "react": "16.13.1",
