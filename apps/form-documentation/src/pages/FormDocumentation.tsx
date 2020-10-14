@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Markdown from 'markdown-to-jsx';
 import {
   Box,
+  BoxProps,
   Code,
   Flex,
   Heading,
@@ -9,6 +10,7 @@ import {
   Image,
   List,
   Spinner,
+  Text,
 } from '@chakra-ui/core';
 
 const fetchDocumentationMarkdown = () =>
@@ -29,7 +31,6 @@ const FormDocumentation: React.FC = () => {
     (async () => {
       setLoading(true);
       const markdownData = await fetchDocumentationMarkdown();
-      console.log(markdownData);
       setMarkdownData(markdownData);
       setLoading(false);
     })();
@@ -53,21 +54,24 @@ const FormDocumentation: React.FC = () => {
     </Flex>
   ) : (
     <Box margin="auto" width={['100%', '80%', '60%', '50%']}>
-      <Image src="../assets/excellent-react.svg" alt="Excellent React" />
-      <Image
-        src="../assets/excellent-react-use-form.svg"
-        alt="Excellent React useForm"
-      />
       <Markdown
         children={markdownData}
         options={{
-          disableParsingRawHTML: false,
+          disableParsingRawHTML: true,
           overrides: {
-            h1: { component: Heading },
-            h2: { component: Heading, props: { size: 'md' } as HeadingProps },
+            h1: {
+              component: Heading,
+              props: { size: 'xl', my: 6 } as HeadingProps,
+            },
+            h2: {
+              component: Heading,
+              props: { size: 'lg', my: 4 } as HeadingProps,
+            },
+            p: { component: Text, props: { my: 2 } as BoxProps },
             img: { component: Image },
             ul: { component: List, props: { styleType: 'disc' } },
             code: { component: Code },
+            pre: { component: Code, props: { as: 'pre', p: 4 } as BoxProps },
           },
         }}
       />
