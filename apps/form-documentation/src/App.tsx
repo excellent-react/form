@@ -8,5 +8,5 @@ export const App: React.FC = () => {
       <CSSReset />
       <FormDocumentation />
     </ThemeProvider>
-  )
-}
+  );
+};
