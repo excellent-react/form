@@ -263,8 +263,7 @@ _Note: Not using any watch mode will only update and validate (if defined) `form
 
 ### Custom input component
 
-Some custom input react components which compile to native input element don't emit input changes. `useForm` hook provides `updateFieldValue` option to update the latest `formValues`.
-
+In order to work form values watching, change of any field in form should emit an event on form tag. Most of all Input components do that but some custom input components that compiles to native input element but don't emit input changes event, where `updateFieldValue` can be use to watch the latest `formValues`.
 ```jsx
 import React from 'react';
 import { useForm } from '@excellent-react/form';
@@ -289,9 +288,8 @@ const MyForm = () => {
 };
 ```
 
-### Note :
-
-Custom input component that has `customFieldHandler` hooked, doesn't need to implement anything to update `formValues`. It would be updated always regardless of the watch mode.
+### Note : 
+Custom input component that has `customFieldHandler` hooked, doesn't need to implement anything to update `formValues`. It would be updated always regardless of any watch mode.
 
 ## **✅ Form Validation**
 
