@@ -16,7 +16,7 @@ import {
 const fetchDocumentationMarkdown = () =>
   new Promise<string>((resolver, reject) => {
     fetch(
-      'https://raw.githubusercontent.com/panchaldeep009/form/master/README.md'
+      'https://raw.githubusercontent.com/excellent-react/form/master/README.md'
     )
       .then((res) => res.text())
       .then(resolver)
