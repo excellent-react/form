@@ -15,8 +15,10 @@ jobs:
         uses: actions/checkout@v1
       - name: Install dependencies
         run: yarn
-      - name: Test and build
-        run: yarn cd-form-documentation
+      - name: Test
+        run: yarn test form
+      - name: Build
+        run: yarn build form
       - name: Version Bump
         uses: rimonhanna/gh-action-bump-version@master
         env:
