@@ -1,7 +1,7 @@
 on:
   push:
     branches: 
-    - master 
+    - feature/github-actions
 
 name: build and release npm package
 jobs:
