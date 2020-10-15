@@ -20,7 +20,7 @@ jobs:
       - name: Version Bump
         uses: rimonhanna/gh-action-bump-version@master
         env:
-          PACKAGEJSON_DIR: ./dist/libs/form
+          PACKAGEJSON_DIR: dist/libs/form
       - name: Publish to npm
         uses: JS-DevTools/npm-publish@v1
         with:
