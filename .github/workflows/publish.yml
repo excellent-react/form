@@ -3,7 +3,7 @@ on:
     branches: 
     - master 
 
-name: Bump version, build and release npm package
+name: build and release npm package
 jobs:
   build-npm:
     name: Build npm package
@@ -11,12 +11,18 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
     steps:
-      - uses: actions/checkout@v1
-      - name: Automated Github Action Version Bump
+      - name: Checkout repo
+        uses: actions/checkout@v1
+      - name: Install dependencies
+        run: yarn
+      - name: Test and build
+        run: yarn cd-form-documentation
+      - name: Version Bump
         uses: rimonhanna/gh-action-bump-version@master
-      - run: npm i
-      - run: npm test
+        env:
+          PACKAGEJSON_DIR: ./dist/libs/form
       - name: Publish to npm
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
+          package: ./dist/libs/form/package.json
