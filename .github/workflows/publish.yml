@@ -1,0 +1,41 @@
+on:
+  push:
+    branches: 
+    - master
+
+name: build and release npm package
+jobs:
+  build-npm:
+    name: Build npm package
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v1
+        
+      - name: Install dependencies
+        run: yarn
+        
+      - name: Test
+        run: yarn test form
+        
+      - name: Build
+        run: yarn build form
+        
+      - name: Bump, tag and release
+        id: bump
+        uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: norelease # gets overriden by PR labels
+        
+      - name: Version Bump
+        run: |
+          echo ${{steps.bump.outputs.version}}
+          cd dist/libs/form 
+          yarn version --new-version "${{ steps.bump.outputs.version }}" --no-git-tag-version
+
+      - name: Publish
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
