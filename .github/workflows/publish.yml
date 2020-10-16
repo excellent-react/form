@@ -36,6 +36,6 @@ jobs:
           yarn version --new-version "${{ steps.bump.outputs.version }}" --no-git-tag-version
 
       - name: Publish
-        run: yarn publish --access public
+        run: yarn publish --cwd=dist/libs/form --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
