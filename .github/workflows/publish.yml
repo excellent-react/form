@@ -1,7 +1,7 @@
 on:
   push:
     branches: 
-    - feature/github-actions
+    - master
 
 name: build and release npm package
 jobs:
@@ -27,10 +27,13 @@ jobs:
         id: bump
         uses: rymndhng/release-on-push-action@master
         with:
-          bump_version_scheme: norelease
+          bump_version_scheme: norelease # gets overriden by PR labels
         
       - name: Version Bump
-        run: cd dist/libs/form && yarn version --new-version "${steps.bump.outputs.version}" --no-git-tag-version
+        run: |
+          echo ${{steps.bump.outputs.version}}
+          cd dist/libs/form 
+          yarn version --new-version "${{ steps.bump.outputs.version }}" --no-git-tag-version
 
       - name: Publish
         run: yarn publish --access public
